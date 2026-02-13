@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Don't Forget</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background: #0f0f14;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    animation: fadeIn 0.8s ease;
+}
+
+.container {
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+}
+
+/* Header */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.title {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.settings {
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: 0.2s ease;
+}
+.settings:hover { opacity: 1; }
+
+.bell {
+    font-size: 60px;
+    text-align: center;
+    margin: 20px 0;
+    background: linear-gradient(135deg, #3b82f6, #6366f1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: float 3s ease-in-out infinite;
+}
+
+.subtitle {
+    text-align: center;
+    color: #aaa;
+    margin-bottom: 40px;
+}
+
+/* Buttons */
+.primary-btn {
+    width: 100%;
+    padding: 18px;
+    border-radius: 20px;
+    border: none;
+    background: linear-gradient(135deg, #3b82f6, #4f46e5);
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+    box-shadow: 0 8px 20px rgba(79,70,229,0.4);
+    cursor: pointer;
+    transition: 0.2s ease;
+    margin-bottom: 20px;
+}
+.primary-btn:hover {
+    filter: brightness(1.1);
+}
+
+.secondary-btn {
+    width: 100%;
+    padding: 18px;
+    border-radius: 20px;
+    background: transparent;
+    border: 1px solid #3b82f6;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s ease;
+    margin-bottom: 40px;
+}
+.secondary-btn:hover {
+    box-shadow: 0 0 15px rgba(59,130,246,0.6);
+}
+
+/* Stats Card */
+.stats-card {
+    background: linear-gradient(145deg, #1a1a24, #14141c);
+    border-radius: 24px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.stats-title {
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-between;
+}
+
+.stat h2 {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.stat p {
+    font-size: 13px;
+    color: #aaa;
+}
+
+.active { color: #3b82f6; }
+.completed { color: #22c55e; }
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+button { transition: all 0.2s ease; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="navbar">
+        <div class="title">Don't Forget</div>
+        <div class="settings">⚙️</div>
+    </div>
+
+    <div class="bell">🔔</div>
+    <div class="subtitle">Never miss an important task again</div>
+
+    <!-- Buttons -->
+    <button class="primary-btn" onclick="addReminder()">➕ Add Reminder</button>
+    <button class="secondary-btn" onclick="viewReminders()">📋 To Do List</button>
+
+    <!-- Stats -->
+    <div class="stats-card">
+        <div class="stats-title">Quick Stats</div>
+        <div class="stats">
+            <div class="stat">
+                <h2 class="active" id="activeCount">0</h2>
+                <p>Active Reminders</p>
+            </div>
+            <div class="stat">
+                <h2 class="completed" id="completedCount">0</h2>
+                <p>Completed Today</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+let reminders = JSON.parse(localStorage.getItem("reminders")) || [];
+let completedToday = 0;
+
+function updateStats() {
+    document.getElementById("activeCount").innerText = reminders.length;
+    document.getElementById("completedCount").innerText = completedToday;
+}
+
+function addReminder() {
+    const title = prompt("Enter reminder title:");
+    if (!title) return;
+
+    reminders.push({
+        id: Date.now(),
+        title,
+        completed: false
+    });
+
+    localStorage.setItem("reminders", JSON.stringify(reminders));
+    updateStats();
+}
+
+function viewReminders() {
+    if (reminders.length === 0) {
+        alert("No reminders yet.");
+        return;
+    }
+
+    let list = reminders.map((r, i) =>
+        `${i + 1}. ${r.title}`
+    ).join("\n");
+
+    let choice = prompt("Your Reminders:\n\n" + list + "\n\nType number to complete:");
+
+    if (choice) {
+        let index = parseInt(choice) - 1;
+        if (reminders[index]) {
+            reminders.splice(index, 1);
+            completedToday++;
+            localStorage.setItem("reminders", JSON.stringify(reminders));
+            updateStats();
+        }
+    }
+}
+
+updateStats();
+</script>
+
+</body>
+</html>
